@@ -1,12 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ItemViewSet, DocumentViewSet, ParsedResultViewSet, api_root, csrf_token
+from .views import ItemViewSet, DocumentViewSet, ParsedResultViewSet, SchemaViewSet, api_root, csrf_token
 
 # Create a router and register our viewsets with it
 router = DefaultRouter()
 router.register(r'items', ItemViewSet)
 router.register(r'documents', DocumentViewSet)
 router.register(r'parsed-results', ParsedResultViewSet)
+router.register(r'schemas', SchemaViewSet)
 
 urlpatterns = [
     path('', api_root, name='api-root'),

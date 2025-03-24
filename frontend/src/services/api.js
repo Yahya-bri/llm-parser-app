@@ -214,6 +214,32 @@ export default {
     return apiClient.get(`/parsed-results/${id}/`)
   },
   
+  // Schema endpoints
+  getSchemas() {
+    return apiClient.get('/schemas/')
+  },
+  getSchema(id) {
+    return apiClient.get(`/schemas/${id}/`)
+  },
+  createSchema(schema) {
+    return apiClient.post('/schemas/', schema)
+  },
+  updateSchema(id, schema) {
+    return apiClient.put(`/schemas/${id}/`, schema)
+  },
+  deleteSchema(id) {
+    return apiClient.delete(`/schemas/${id}/`)
+  },
+  getExampleSchema() {
+    return apiClient.get('/schemas/example/')
+  },
+  testSchema(schemaId, documentId, pageNumber = 1) {
+    return apiClient.post(`/schemas/${schemaId}/test-parse/`, {
+      document_id: documentId,
+      page_number: pageNumber
+    })
+  },
+  
   // CSRF token management
   fetchCSRFToken
 }

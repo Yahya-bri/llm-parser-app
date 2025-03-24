@@ -111,3 +111,15 @@ class ParserService:
             return parser.parse_base64(base64_image, prompt)
         else:
             return parser.parse_base64(base64_image)
+            
+    def add_schema(self, name: str, schema: Dict[str, Any]) -> None:
+        """Add a new schema to the available schemas.
+        
+        Args:
+            name: Name of the schema
+            schema: Schema definition as a dictionary
+        """
+        self.schemas[name] = schema
+        # Remove any existing parser for this schema to force recreation
+        if name in self.parsers:
+            del self.parsers[name]

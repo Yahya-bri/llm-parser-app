@@ -12,13 +12,14 @@ import traceback
 import logging
 import json  # Add this missing import
 from packages.vision_parser import ParserService
-from .models import Item, Document, ParsedResult
+from .models import Item, Document, ParsedResult, Schema
 from .serializers import (
     ItemSerializer, 
     DocumentSerializer, 
     ParsedResultSerializer,
     DocumentUploadSerializer,
-    DocumentParseSerializer
+    DocumentParseSerializer,
+    SchemaSerializer
 )
 
 # Set up logger
@@ -200,11 +201,17 @@ class DocumentViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_200_OK
                     )
                 
-                # Initialize parser service
+                # Initialize parser service with built-in schemas from schema directory
                 parser_service = ParserService(
                     schema_dir=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'schemas'),
                     default_schema=schema_type
                 )
+                
+                # Check if a custom schema with this name exists
+                custom_schema = Schema.objects.filter(name=schema_type).first()
+                if custom_schema:
+                    # Add the custom schema to the parser service
+                    parser_service.add_schema(schema_type, custom_schema.schema_json)
                 
                 # Parse the document
                 result = parser_service.parse_document(
@@ -323,3 +330,105 @@ class ParsedResultViewSet(viewsets.ReadOnlyModelViewSet):
         if document_id is not None:
             queryset = queryset.filter(document_id=document_id)
         return queryset
+
+
+@extend_schema(tags=["Schemas"])
+class SchemaViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for managing document schemas.
+    
+    Allows creating, viewing, updating, and deleting schemas that
+    can be used to parse documents with specific structures.
+    """
+    queryset = Schema.objects.all()
+    serializer_class = SchemaSerializer
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        responses={200: {'type': 'object', 'properties': {
+            'example': {'type': 'object'},
+        }}}
+    )
+    @action(detail=False, methods=['get'], url_path='example')
+    def get_example_schema(self, request):
+        """
+        Returns an example schema for reference.
+        """
+        try:
+            # Load the example resume schema from the schemas directory
+            schemas_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'schemas')
+            schema_path = os.path.join(schemas_dir, 'resume.json')
+            
+            with open(schema_path, 'r') as f:
+                example_schema = json.load(f)
+                
+            return Response({
+                'example': example_schema
+            })
+        except Exception as e:
+            return Response(
+                {"error": f"Failed to load example schema: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            
+    @action(detail=True, methods=['post'], url_path='test-parse')
+    def test_schema(self, request, pk=None):
+        """
+        Test a schema by parsing a sample document.
+        """
+        try:
+            schema = self.get_object()
+            
+            # Check if document_id is provided
+            document_id = request.data.get('document_id')
+            page_number = request.data.get('page_number', 1)
+            
+            if not document_id:
+                return Response(
+                    {"error": "document_id is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            # Get the document
+            try:
+                document = Document.objects.get(id=document_id)
+            except Document.DoesNotExist:
+                return Response(
+                    {"error": "Document not found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+                
+            # Check for Google API key
+            google_api_key = os.environ.get('GOOGLE_API_KEY')
+            if not google_api_key or google_api_key in ['your-google-api-key', 'your-google-api-key-here']:
+                return Response(
+                    {"error": "Valid Google API key not configured"},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE
+                )
+                
+            # Create a temporary instance of ParserService with the custom schema
+            parser_service = ParserService(
+                api_key=google_api_key,
+                schemas={
+                    'custom': schema.schema_json
+                },
+                default_schema='custom'
+            )
+                
+            # Parse the document with the custom schema
+            result = parser_service.parse_document(
+                document_path=document.file.path,
+                page_number=int(page_number)
+            )
+                
+            return Response({
+                'result': result
+            })
+                
+        except Exception as e:
+            logger.error(f"Error testing schema: {str(e)}")
+            logger.error(traceback.format_exc())
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

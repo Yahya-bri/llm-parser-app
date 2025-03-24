@@ -36,6 +36,7 @@
                 <div class="buttons">
                     <RouterLink to="/items" class="button">View Items</RouterLink>
                     <RouterLink to="/documents" class="button">Document Parser</RouterLink>
+                    <RouterLink to="/schemas" class="button">Custom Schemas</RouterLink>
                     <a href="http://localhost:8000/api/schema/swagger-ui/" target="_blank" class="button api-button">API
                         Documentation</a>
                 </div>

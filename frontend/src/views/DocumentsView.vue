@@ -29,10 +29,18 @@
                     <div class="form-group">
                         <label for="schema-type">Document Type:</label>
                         <select id="schema-type" v-model="schemaType">
+                            <!-- Built-in schemas -->
                             <option value="resume">Resume</option>
                             <option value="invoice">Invoice</option>
                             <option value="receipt">Receipt</option>
                             <option value="id_card">ID Card</option>
+
+                            <!-- Custom schemas -->
+                            <optgroup v-if="customSchemas.length" label="Custom Schemas">
+                                <option v-for="schema in customSchemas" :key="schema.id" :value="schema.name">
+                                    {{ schema.name }}
+                                </option>
+                            </optgroup>
                         </select>
                     </div>
 
@@ -102,10 +110,12 @@
 import { ref, onMounted, computed } from 'vue'
 import { useDocumentsStore } from '../stores/documents'
 import { useAuthStore } from '../stores/auth'
+import { useSchemasStore } from '../stores/schemas'
 import { RouterLink } from 'vue-router'
 
 const documentsStore = useDocumentsStore()
 const authStore = useAuthStore()
+const schemasStore = useSchemasStore()
 
 // Add authentication status for debugging
 const isAuthenticated = computed(() => authStore.isAuthenticated)
@@ -119,6 +129,7 @@ const currentPage = computed(() => documentsStore.currentPage)
 const parsedResult = computed(() => documentsStore.parsedResult)
 const loading = computed(() => documentsStore.loading)
 const error = computed(() => documentsStore.error)
+const customSchemas = computed(() => schemasStore.schemas)
 
 const selectedFile = ref(null)
 const schemaType = ref('resume')
@@ -135,6 +146,8 @@ onMounted(async () => {
 
         if (isValid) {
             await documentsStore.fetchDocuments()
+            // Fetch custom schemas to display in dropdown
+            await schemasStore.fetchSchemas()
         } else {
             // If not valid, we'll be redirected to login by the checkAuth function
             console.log('Auth validation failed, redirection should occur');

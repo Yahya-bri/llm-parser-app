@@ -5,6 +5,7 @@
                 <RouterLink to="/">Home</RouterLink>
                 <RouterLink to="/items">Items</RouterLink>
                 <RouterLink to="/documents">Documents</RouterLink>
+                <RouterLink to="/schemas">Schemas</RouterLink>
                 <div class="auth-links">
                     <template v-if="isAuthenticated">
                         <span>Welcome, {{ username }}</span>
