@@ -1,0 +1,224 @@
+{
+    "title": "Invoice",
+    "description": "Extract structured information from an invoice document",
+    "additionalProperties": false,
+    "properties": {
+      "Invoice_Details": {
+        "type": "object",
+        "description": "Basic invoice identification information",
+        "properties": {
+          "Invoice_Number": {
+            "type": "string",
+            "description": "Unique identifier for the invoice (e.g., 'INV-12345')"
+          },
+          "Issue_Date": {
+            "type": "string",
+            "description": "Date when the invoice was issued (e.g., '2023-05-15')"
+          },
+          "Due_Date": {
+            "type": "string",
+            "description": "Date when payment is due (e.g., '2023-06-15')"
+          },
+          "Currency": {
+            "type": "string",
+            "description": "Currency used for the invoice (e.g., 'USD', 'EUR')"
+          },
+          "PO_Number": {
+            "type": "string",
+            "description": "Purchase order reference number if available"
+          }
+        },
+        "required": ["Invoice_Number", "Issue_Date"],
+        "additionalProperties": false
+      },
+      "Vendor": {
+        "type": "object",
+        "description": "Information about the seller or service provider",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Legal name of the vendor (e.g., 'Acme Corporation')"
+          },
+          "Address": {
+            "type": "string",
+            "description": "Complete address of the vendor"
+          },
+          "Tax_ID": {
+            "type": "string",
+            "description": "Tax identification number (VAT, GST, EIN, etc.)"
+          },
+          "Contact": {
+            "type": "object",
+            "properties": {
+              "Email": {
+                "type": "string",
+                "description": "Vendor email address"
+              },
+              "Phone": {
+                "type": "string",
+                "description": "Vendor phone number"
+              },
+              "Website": {
+                "type": "string",
+                "description": "Vendor website URL"
+              }
+            },
+            "additionalProperties": false
+          },
+          "Bank_Details": {
+            "type": "object",
+            "properties": {
+              "Account_Name": {
+                "type": "string",
+                "description": "Name on the bank account"
+              },
+              "Account_Number": {
+                "type": "string",
+                "description": "Bank account number"
+              },
+              "Bank_Name": {
+                "type": "string",
+                "description": "Name of the bank"
+              },
+              "Swift_BIC": {
+                "type": "string",
+                "description": "SWIFT/BIC code for international transfers"
+              },
+              "IBAN": {
+                "type": "string",
+                "description": "International Bank Account Number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": ["Name"],
+        "additionalProperties": false
+      },
+      "Customer": {
+        "type": "object",
+        "description": "Information about the buyer or client",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Name of the customer or organization"
+          },
+          "Address": {
+            "type": "string",
+            "description": "Billing address of the customer"
+          },
+          "Tax_ID": {
+            "type": "string",
+            "description": "Customer tax identification number if applicable"
+          },
+          "Contact_Person": {
+            "type": "string",
+            "description": "Name of the contact person"
+          },
+          "Email": {
+            "type": "string",
+            "description": "Customer email address"
+          }
+        },
+        "required": ["Name"],
+        "additionalProperties": false
+      },
+      "Line_Items": {
+        "type": "array",
+        "description": "List of products or services included in the invoice",
+        "items": {
+          "type": "object",
+          "properties": {
+            "Description": {
+              "type": "string",
+              "description": "Description of the product or service"
+            },
+            "Quantity": {
+              "type": "number",
+              "description": "Quantity of items"
+            },
+            "Unit_Price": {
+              "type": "number",
+              "description": "Price per unit excluding tax"
+            },
+            "Discount": {
+              "type": "number",
+              "description": "Discount amount or percentage if applicable"
+            },
+            "Tax_Rate": {
+              "type": "number",
+              "description": "Tax rate applied to this item (e.g., 20 for 20%)"
+            },
+            "Tax_Amount": {
+              "type": "number",
+              "description": "Tax amount for this line item"
+            },
+            "Total": {
+              "type": "number",
+              "description": "Total amount for this line item including tax"
+            }
+          },
+          "required": ["Description", "Quantity", "Unit_Price"],
+          "additionalProperties": false
+        }
+      },
+      "Totals": {
+        "type": "object",
+        "description": "Summary of invoice amounts",
+        "properties": {
+          "Subtotal": {
+            "type": "number",
+            "description": "Sum of all line items before tax"
+          },
+          "Tax_Total": {
+            "type": "number",
+            "description": "Total tax amount"
+          },
+          "Discount_Total": {
+            "type": "number",
+            "description": "Total discount applied"
+          },
+          "Shipping": {
+            "type": "number",
+            "description": "Shipping or delivery charges"
+          },
+          "Total_Due": {
+            "type": "number",
+            "description": "Final amount due for payment"
+          }
+        },
+        "required": ["Total_Due"],
+        "additionalProperties": false
+      },
+      "Payment": {
+        "type": "object",
+        "description": "Payment information and status",
+        "properties": {
+          "Payment_Method": {
+            "type": "string",
+            "description": "Method of payment (e.g., 'Credit Card', 'Bank Transfer')"
+          },
+          "Payment_Terms": {
+            "type": "string",
+            "description": "Terms of payment (e.g., 'Net 30', 'Due on Receipt')"
+          },
+          "Status": {
+            "type": "string",
+            "description": "Payment status (e.g., 'Paid', 'Unpaid', 'Partial')"
+          },
+          "Paid_Amount": {
+            "type": "number",
+            "description": "Amount already paid if applicable"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Notes": {
+        "type": "string",
+        "description": "Additional notes or comments on the invoice"
+      }
+    },
+    "required": ["Invoice_Details", "Vendor", "Customer", "Line_Items", "Totals"],
+    "type": "object"
+  }
+  

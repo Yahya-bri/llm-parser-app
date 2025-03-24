@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  # Django Backend
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/app
+      - static_files:/app/staticfiles
+      - media_files:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SECRET_KEY=django-insecure-production-key-change-this
+      - DEBUG=True # Change to True for easier debugging
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
+      - DB_NAME=db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - GOOGLE_API_KEY=AIzaSyAREA1hhyYISObZ-A7yPvdM0ixvpOHf9Q8
+    ports:
+      - "8000:8000"
+    # Add a custom startup command to wait for DB and run migrations
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        python manage.py migrate auth &&
+        python manage.py migrate &&
+        python manage.py makemigrations &&
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        gunicorn --bind 0.0.0.0:8000 config.wsgi
+      "
+
+  # Vue.js Frontend
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://backend:8000/api
+
+volumes:
+  postgres_data:
+  static_files:
+  media_files:

@@ -1,0 +1,221 @@
+{
+  "title": "Resume",
+  "description": "Extract structured information from a resume or CV document",
+  "additionalProperties": false,
+  "properties": {
+    "Personal_Information": {
+      "description": "Full legal name of the individual (e.g., 'BRITAL Yahya').",
+      "type": "string"
+    },
+    "Contact": {
+      "additionalProperties": false,
+      "properties": {
+        "Email": {
+          "description": "Primary email address for professional communication (e.g., 'yahyabrital2020@gmail.com').",
+          "type": "string"
+        },
+        "Phone": {
+          "description": "Phone integer in international format (e.g., '+33 752 347174').",
+          "type": "string"
+        },
+        "LinkedIn": {
+          "description": "LinkedIn profile URL.",
+          "type": "string"
+        }
+      },
+      "required": ["Email", "Phone"],
+      "type": "object"
+    },
+    "Experience": {
+      "description": "List of professional roles and responsibilities.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Position": {
+            "description": "Job title held (e.g., 'Consultant Transformation Digitale').",
+            "type": "string"
+          },
+          "Company": {
+            "description": "Name of the employer or client (e.g., 'Akkodis').",
+            "type": "string"
+          },
+          "StartDate": {
+            "description": "Start date of the role (e.g., 'Sep 2023').",
+            "type": "integer"
+          },
+          "EndDate": {
+            "description": "End date or 'Present' if current (e.g., 'Present').",
+            "type": "integer"
+          },
+          "Location": {
+            "description": "City and country of employment (e.g., 'Paris, France').",
+            "type": "string"
+          },
+          "Description": {
+            "description": "List of responsibilities, achievements, or key tasks (e.g., ['Mise en œuvre du module Qualité dans le MES...', ...]).",
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["Position", "Company", "StartDate"],
+        "additionalProperties": false
+      }
+    },
+    "Education": {
+      "description": "List of academic qualifications.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Institution": {
+            "description": "Name of the educational institution (e.g., 'École nationale supérieure d’Arts et Métiers').",
+            "type": "string"
+          },
+          "Degree": {
+            "description": "Formal degree awarded (e.g., 'Ingénieur industriel - Double Diplôme').",
+            "type": "string"
+          },
+          "Field_of_Study": {
+            "description": "Specialization or concentration (e.g., 'Intelligence Artificielle').",
+            "type": "string"
+          },
+          "StartDate": {
+            "description": "Start date of the program (e.g., '2021').",
+            "type": "integer"
+          },
+          "EndDate": {
+            "description": "Completion date or expected graduation (e.g., '2023').",
+            "type": "integer"
+          },
+          "GPA": {
+            "description": "Grade Point Average (e.g., '3.8').",
+            "type": "integer"
+          },
+          "Projects_Theses": {
+            "description": "List of academic projects or theses.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "Title": {
+                  "description": "Project/thesis title (e.g., 'SAP-KPI-REPORTING').",
+                  "type": "string"
+                },
+                "Description": {
+                  "description": "Summary of the project’s objectives and outcomes.",
+                  "type": "string"
+                },
+                "Technologies_Used": {
+                  "description": "Tools or frameworks applied (e.g., ['Python', 'AWS']).",
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["Institution", "Degree"],
+        "additionalProperties": false
+      }
+    },
+    "Skills": {
+      "description": "Technical and soft skills, certifications, and languages.",
+      "type": "object",
+      "properties": {
+        "Technical_Skills": {
+          "description": "Technical proficiencies (e.g., 'Machine Learning', 'AWS').",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "Soft_Skills": {
+          "description": "Interpersonal or behavioral skills (e.g., 'Communication efficace').",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "Certifications": {
+          "description": "List of professional certifications.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Name": {
+                "description": "Certification title (e.g., 'Industrial IoT on Google Cloud').",
+                "type": "string"
+              },
+              "Issuing_Organization": {
+                "description": "Provider of the certification (e.g., 'Coursera').",
+                "type": "string"
+              },
+              "Date": {
+                "description": "Date of certification (e.g., '2023').",
+                "type": "integer"
+              }
+            },
+            "required": ["Name", "Issuing_Organization"],
+            "additionalProperties": false
+          }
+        },
+        "Languages": {
+          "description": "Languages and proficiency levels.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Language": {
+                "description": "Language name (e.g., 'Français').",
+                "type": "string"
+              },
+              "Proficiency": {
+                "description": "Proficiency level (e.g., 'Bilingue', 'Native').",
+                "type": "string"
+              }
+            },
+            "required": ["Language", "Proficiency"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["Technical_Skills", "Soft_Skills"],
+      "additionalProperties": false
+    },
+    "Projects": {
+      "description": "List of personal or professional projects.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Title": {
+            "description": "Project title (e.g., 'Digitalisation de la traçabilité Qualité Industrie 4.0').",
+            "type": "string"
+          },
+          "Description": {
+            "description": "Detailed project description and objectives.",
+            "type": "string"
+          },
+          "Technologies_Used": {
+            "description": "Tools or technologies used (e.g., ['AWS', 'Kubernetes']).",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "Link": {
+            "description": "URL to the project repository or demo (optional).",
+            "type": "string"
+          }
+        },
+        "required": ["Title", "Description"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "Personal_Information",
+    "Contact",
+    "Experience",
+    "Education",
+    "Skills",
+    "Projects"
+  ],
+  "type": "object"
+}
