@@ -28,6 +28,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - ./backend/.env
     environment:
       - SECRET_KEY=django-insecure-production-key-change-this
       - DEBUG=True # Change to True for easier debugging
@@ -37,7 +39,6 @@ services:
       - DB_PASSWORD=postgres
       - DB_HOST=db
       - DB_PORT=5432
-      - GOOGLE_API_KEY=AIzaSyAREA1hhyYISObZ-A7yPvdM0ixvpOHf9Q8
     ports:
       - "8000:8000"
     # Add a custom startup command to wait for DB and run migrations
